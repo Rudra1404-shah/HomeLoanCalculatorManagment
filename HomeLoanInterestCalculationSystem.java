@@ -148,11 +148,11 @@ class DatabaseManager {
                 "phone_number VARCHAR(50))";
 
         String createadminTable="CREATE TABLE IF NOT EXISTS User ("+        
-        "id INT  AUTO_INCREMENT PRIMARY KEY  ,"   +    
+        "id INT  AUTO_INCREMENT PRIMARY KEY,"   +    
         "name VARCHAR(50) NOT NULL,"+
-               "password VARCHAR(4) NOT NULL UNIQUE,"+" )";      
+               "password VARCHAR(4) NOT NULL UNIQUE)";      
           
-                         
+                      
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
@@ -163,7 +163,7 @@ class DatabaseManager {
     }
     public int checkLoanId(String name,String pass) throws SQLException, ClassNotFoundException
     {
-        String sql="Select*from user where name=? and password=?";
+        String sql="Select*from User where name=? and password=?";
         int loanId=0;
         try(Connection conn=connect();
         PreparedStatement pst=conn.prepareStatement(sql))
@@ -241,32 +241,20 @@ class DatabaseManager {
 
     public void registerAdmin() throws ClassNotFoundException, SQLException
     {
-        String sql="INSERT INTO user(name,password,isAdmin) VALUES(?,?,?)";
-        try(Connection conn=connect();
-             PreparedStatement pst1=conn.prepareStatement(sql))
+        //changes made
+        String sql="INSERT INTO user(name,password) VALUES(?,?)";
+        try(Connection conn=connect())
              {
                System.out.println("---Enter Admin Details---");
                         System.out.println("Enter Admin Name");
-                        String name=sc.next();
-                        for (int i = 0; i < name.length(); i++) {
-                            char ch = name.charAt(i);
-                            if (!Character.isLetter(ch)) {
-                                System.out.println("Your Name is not Valid");
-                                return ; 
-                            }
-                        }
-                        System.out.println("Enter Admin Password");
-                        String pass=sc.next();
-                        for (int i = 0; i < pass.length(); i++) {
-                            char ch = pass.charAt(i);
-                            if (ch < '0' || ch > '9') {
-                                 System.out.println("You password is not Valid !!");
-                                 return;
-                            }
-                        }
+                        String name=sc.nextLine();
+                        
+                        System.out.println("Enter Admin Password (4 Digits Only)");
+                        String pass=sc.nextLine();
+                        PreparedStatement pst1=conn.prepareStatement(sql);
                         pst1.setString(1, name);
                         pst1.setString(2, pass);
-                        pst1.setInt(3, 1);
+                        // pst1.setInt(3, 1);v changes madfe
                         int r=pst1.executeUpdate();
                         if (r>0) {
                             System.out.println("---Registration Completed---");
@@ -284,22 +272,10 @@ class DatabaseManager {
                System.out.println("---Enter User Details---");
                         System.out.println("Enter User Name");
                         String name=sc.next();
-                        for (int i = 0; i < name.length(); i++) {
-                            char ch = name.charAt(i);
-                            if (!Character.isLetter(ch)) {
-                                System.out.println("Your Name is not Valid");
-                                return ; 
-                            }
-                        }
+                
                         System.out.println("Enter User Password");
                         String pass=sc.next();
-                        for (int i = 0; i < pass.length(); i++) {
-                            char ch = pass.charAt(i);
-                            if (ch < '0' || ch > '9') {
-                                 System.out.println("You password is not Valid !!");
-                                 return;
-                            }
-                        }
+                       
                         System.out.print("Enter Email: ");
                         String email = sc.next();
                         System.out.print("Enter Phone Number: ");
@@ -343,7 +319,7 @@ class DatabaseManager {
             preparedStatement.setString(2, password);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                int check=resultSet.getInt(4);
+                int check=resultSet.getInt(1);
                 if (check==1) {
                     runAdminInterface();
                 }
@@ -366,7 +342,7 @@ class DatabaseManager {
         System.out.println("3] Exit");
         System.out.print("Enter your choice: ");
         int choice = sc.nextInt();
-
+        sc.nextLine();//change made
         switch (choice) {
             case 1:
                 login();
@@ -391,6 +367,8 @@ class DatabaseManager {
                 System.out.println("1] Register as a Admin");
                 System.out.println("2] Register as User");
                 choice=sc.nextInt();
+                sc.nextLine();//change made
+
                 if(choice==1)
                 {
                     registerAdmin();
@@ -410,7 +388,7 @@ class DatabaseManager {
         do {
             System.out.println("--Admin Page--");
             System.out.println("1] View recent Loan Calculation History");
-            System.out.println("2] Remove LoanCalculation");
+            System.out.println("2] Remove Loan");
             System.out.println("3] View All Loans from Database");
             System.out.println("4] LogOut");
             System.out.println("Enter your Choice");
@@ -588,7 +566,7 @@ class DatabaseManager {
                 System.out.println("---Enter details to Remove User---");
                             System.out.println("Enter loan id");
                             int idl=sc.nextInt();
-                            System.out.println("Enter borrower id");
+                            System.out.println("Enter Customer id");
                             int idb=sc.nextInt();
                             if(idl==idb)
                             {
